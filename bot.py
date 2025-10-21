@@ -13,7 +13,7 @@ async def start_handler(message: types.Message):
         inline_keyboard=[
             [InlineKeyboardButton(
                 text="🌐 Open Mini App",
-                web_app=WebAppInfo(url="https://djurakulovmuzaffar01-bit.github.io/xzx/")  # GitHub Pages manziling
+                web_app = WebAppInfo(url="https://djurakulovmuzaffar01-bit.github.io/xzx/") # GitHub Pages manziling
             )]
         ]
     )
@@ -24,3 +24,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
