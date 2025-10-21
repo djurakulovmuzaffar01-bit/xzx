@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini App - Telegram</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: linear-gradient(120deg, #007AFF, #00C9A7);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    button {
+      background: white;
+      color: #007AFF;
+      border: none;
+      border-radius: 10px;
+      padding: 15px 25px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Assalomu alaykum, <span id="user"></span>!</h1>
+  <p>Bu sizning Telegram mini app'ingiz 🎯</p>
+  <button id="sendData">Ma’lumot yubor</button>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand(); // Ekranni to‘liq ochadi
+
+    document.getElementById("user").innerText = tg.initDataUnsafe.user?.first_name || "Do‘stim";
+
+    document.getElementById("sendData").addEventListener("click", () => {
+      tg.sendData("Mini appdan ma’lumot yuborildi ✅");
+    });
+  </script>
+</body>
+</html>
