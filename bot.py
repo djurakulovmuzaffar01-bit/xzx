@@ -4,6 +4,8 @@ import string
 import time
 import asyncio
 import json
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from telegram import ReplyKeyboardMarkup
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
@@ -34,6 +36,18 @@ def get_active_token_by_owner(user_id):
             return token
     return None
 
+def keep_alive():
+    port = int(os.environ.get("PORT", 10000))
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"OK")
+
+    server = HTTPServer(("0.0.0.0", port), Handler)
+    server.serve_forever()
+    
 def extract_only_id(line: str) -> str:
     if "→" in line:
         return line.split("→")[-1].strip()
@@ -1180,6 +1194,9 @@ web_start_keyboard = ReplyKeyboardMarkup(
 # Main
 # --------------------------
 def main():
+    # ✅ Render port ko‘rishi uchun keep_alive ishga tushadi
+    threading.Thread(target=keep_alive, daemon=True).start()
+
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
     # -------- COMMANDS --------
@@ -1188,7 +1205,7 @@ def main():
     app.add_handler(CommandHandler("menu", menu))
     app.add_handler(CommandHandler("members", members_handler))
 
-    # -------- INLINE CALLBACKS (ANIQ PATTERNLAR AVVAL) --------
+    # -------- INLINE CALLBACKS --------
     app.add_handler(CallbackQueryHandler(make_contest, pattern="^make_contest$"))
     app.add_handler(CallbackQueryHandler(show_channel, pattern="^show_channel_"))
     app.add_handler(CallbackQueryHandler(add_channel, pattern="^add_channel_"))
@@ -1201,12 +1218,7 @@ def main():
     app.add_handler(CallbackQueryHandler(send_post_to_channel, pattern="^send_post_"))
 
     # -------- GENERAL MENU CALLBACK (ENG OXIRIDA) --------
-    app.add_handler(
-        CallbackQueryHandler(
-            menu_callback,
-            pattern="^(start_cmd|stop_cmd|members)$"
-        )
-    )
+    app.add_handler(CallbackQueryHandler(menu_callback, pattern="^(start_cmd|stop_cmd|members)$"))
 
     # -------- TEXT --------
     app.add_handler(MessageHandler(filters.TEXT, text_handler))
@@ -1216,4 +1228,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
     
